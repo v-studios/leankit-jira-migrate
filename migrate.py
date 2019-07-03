@@ -13,6 +13,7 @@
 # - Card showing tasks: https://v-studios.leankit.com/card/863683312/tasks
 # - A task by itself:   https://v-studios.leankit.com/card/863688796
 
+import csv
 import os
 
 import requests
@@ -44,6 +45,37 @@ boards = requests.get(f'{API}/board', auth=auth).json()
 
 res = requests.get(f'{API}/card?board={BOARD_SUBTASKS}', auth=auth).json()
 
+# Getting comments:
+# A Task has comments right in the item
+# but for a Card we have to ask, how stupid
+
+csvfile = open(f'board-{BOARD}-comments.csv', 'w')  # newline=''?
+csvout = csv.DictWriter(csvfile, fieldnames=('card_id', 'title', 'comment'), dialect='excel', quoting=csv.QUOTE_ALL)
+csvout.writeheader()
+
+for card in res['cards']:
+    cid = card['id']
+    title = card['title']       # required for import, even comments??
+    res = requests.get(f'{API}/card/{cid}/comment', auth=auth).json()
+    for comment in res['comments']:
+        email = comment['createdBy']['emailAddress']
+        text = comment['text']
+        dt = comment['createdOn']
+        print(f'card id={cid} dt={dt} email={email} text={text}')
+        csvout.writerow({'card_id': cid, 'title': title, 'comment': text})
+
+    # if 'comments' in card:
+    #     print(f'card id={card["id"]} comments={card["comments"]}')  # multiples, with dates and people
+    # else:
+    #     #print(f'NOCOMMENT {card}')
+    #     import pdb; pdb.set_trace()
+
+        
+
+exit(0)
+
+
+# Getting Cards' Tasks:
 for card in res['cards']:
     #print(f'card={card}')
     cid = card['id']
