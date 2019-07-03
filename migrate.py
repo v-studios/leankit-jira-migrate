@@ -16,6 +16,7 @@
 import csv
 import os
 
+from jira.client import JIRA
 import requests
 import requests.auth
 
@@ -27,8 +28,21 @@ USER = os.environ['LEANKIT_EMAIL']  # user@company.com
 PASSWD = os.environ['LEANKIT_PASSWD']
 API = f'https://{DOMAIN}.leankit.com/io'
 
-# leankit.api.authenticate(DOMAIN, USER, PASSWD)
-# board = leankit.Board(BOARD)
+# JIRA_URL = 'https://v-studios.atlassian.net'
+# JIRA_API = f'{JIRA_URL}/rest/api/2/'
+# JIRA_USER = os.environ['JIRA_USER']
+# JIRA_TOKEN = os.environ['JIRA_TOKEN']  # Gotten from Atlassian
+
+# # This works:
+# res = requests.get(f'{JIRA_API}/search?jql=project=SPEC&maxResults=2',
+#                    auth=(JIRA_USER, JIRA_TOKEN))
+# pp(res)
+
+# Can't get this to work:
+#jac = JIRA(JIRA_URL, basic_auth=(JIRA_USER, JIRA_PASS))
+#jac = JIRA(JIRA_URL, auth=(JIRA_USER, JIRA_TOKEN))
+# exit(0)
+
 
 auth = requests.auth.HTTPBasicAuth(USER, PASSWD)
 boards = requests.get(f'{API}/board', auth=auth).json()
